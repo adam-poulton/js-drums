@@ -30,18 +30,31 @@ class Switcher {
   }
 }
 
-function playSound(e){
-  const key = document.querySelector(`.key[data-key="${e.keyCode}"]`)
-  const audio = sounds.find(({key}) => key == e.keyCode)
-  if (!audio) return; // stop the function
-  audio.sound.play();
-  key.classList.add('playing');
-};
+function keyPress(e){
+  playAudio(e.keyCode);
+  animateButton(e.keyCode);
+}
+
+function mouseClick(e){
+  console.log(e)
+}
 
 function removeTransition(e){
   if(e.propertyName !== 'transform') return;
   this.classList.remove('playing');
 };
+
+function playAudio(keyCode){
+  const audio = sounds.find(({key}) => key == keyCode)
+  if (!audio) return; // stop the function
+  audio.sound.play();
+}
+
+function animateButton(keyCode){
+  const key = document.querySelector(`.key[data-key="${keyCode}"]`)
+  if (!key) return;
+  key.classList.add('playing');
+}
 
 
 const sounds = [];
@@ -50,7 +63,7 @@ keys.forEach(key => {
     const keyCode = parseInt(key.getAttribute('data-key'));
     const audio = document.querySelector(`audio[data-key="${keyCode}"]`);
     key.addEventListener('transitionend', removeTransition)
-    sounds.push({key: keyCode, sound: new Switcher(audio, 5)})
+    key.addEventListener('click', mouseClick)
+    sounds.push({key: keyCode, sound: new Switcher(audio, 10)})
     });
-console.log(sounds)
-window.addEventListener('keydown', playSound);
+window.addEventListener('keydown', keyPress);
